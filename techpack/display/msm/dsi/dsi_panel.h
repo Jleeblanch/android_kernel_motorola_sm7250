@@ -326,6 +326,8 @@ struct dsi_panel {
 	bool is_panel_dead;
 	u8  boe_gamma_read_val[MAX_GAMMA_REG_CONT][MAX_GAMMA_VALUE_CONT];
 	bool boe_gamma_read;
+
+	bool hbm_state;
 };
 
 bool dsi_display_all_displays_dead(void);
@@ -457,5 +459,7 @@ int dsi_panel_set_param(struct dsi_panel *panel,
 			struct msm_param_info *param_info);
 
 void dsi_panel_reset_param(struct dsi_panel *panel);
+
+void dsi_panel_set_custom_param(struct dsi_panel *panel);
 
 #endif /* _DSI_PANEL_H_ */
