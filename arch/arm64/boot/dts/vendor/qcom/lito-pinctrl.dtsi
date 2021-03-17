@@ -98,6 +98,7 @@
 		irqdomain-map-mask = <0xff 0>;
 		irqdomain-map-pass-thru = <0 0xff>;
 
+
 		trigout_a: trigout_a {
 			mux {
 				pins = "gpio63";
@@ -447,6 +448,7 @@
 			};
 		};
 
+		/* WSA speaker reset pins */
 		spkr_1_sd_n {
 			spkr_1_sd_n_sleep: spkr_1_sd_n_sleep {
 				mux {
@@ -456,7 +458,7 @@
 
 				config {
 					pins = "gpio58";
-					drive-strength = <0x02>;
+					drive-strength = <2>;   /* 2 mA */
 					bias-pull-down;
 					input-enable;
 				};
@@ -470,7 +472,7 @@
 
 				config {
 					pins = "gpio58";
-					drive-strength = <0x10>;
+					drive-strength = <16>;   /* 16 mA */
 					bias-disable;
 					output-high;
 				};
@@ -486,7 +488,7 @@
 
 				config {
 					pins = "gpio65";
-					drive-strength = <0x02>;
+					drive-strength = <2>;   /* 2 mA */
 					bias-pull-down;
 					input-enable;
 				};
@@ -500,7 +502,7 @@
 
 				config {
 					pins = "gpio65";
-					drive-strength = <0x10>;
+					drive-strength = <16>;   /* 16 mA */
 					bias-disable;
 					output-high;
 				};
