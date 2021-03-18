@@ -36,7 +36,7 @@
 		mboxes = <&qmp_aop 0>;
 	};
 
-	aliases: aliases {
+	aliases {
 		serial0 = &qupv3_se2_2uart;	/*RUMI*/
 		ufshc1 = &ufshc_mem; /* Embedded UFS slot */
 		swr0 = &swr0;
@@ -305,6 +305,25 @@
 	};
 
 	firmware: firmware {
+		android {
+			compatible = "android,firmware";
+			vbmeta {
+				compatible = "android,vbmeta";
+				parts = "vbmeta,boot,system,vendor,dtbo";
+			};
+
+			fstab {
+				compatible = "android,fstab";
+				vendor {
+					compatible = "android,vendor";
+					dev = "/dev/block/platform/soc/1d84000.ufshc/by-name/vendor";
+					type = "ext4";
+					mnt_flags = "ro,barrier=1,discard";
+					fsmgr_flags = "wait,slotselect";
+					status = "ok";
+				};
+			};
+		};
 	};
 
 	psci {
@@ -312,7 +331,7 @@
 		method = "smc";
 	};
 
-	reserved_memory:reserved-memory {
+	reserved-memory {
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
@@ -351,7 +370,7 @@
 
 		qtee_apps_mem: qtee_apps_region@81e00000 {
 			no-map;
-			reg = <0x0 0x81e00000 0x0 0x4200000>;
+			reg = <0x0 0x81e00000 0x0 0x2600000>;
 		};
 
 		pil_camera_mem: pil_camera_region@86000000 {
@@ -370,12 +389,6 @@
 			compatible = "removed-dma-pool";
 			no-map;
 			reg = <0x0 0x86a00000 0x0 0x500000>;
-		};
-
-		pil_cvp_mem: pil_cvp_region@86f00000 {
-			compatible = "removed-dma-pool";
-			no-map;
-			reg = <0x0 0x86f00000 0x0 0x500000>;
 		};
 
 		pil_cdsp_mem: pil_cdsp_region@87400000 {
@@ -514,17 +527,11 @@
 
 	};
 
-	chosen: chosen {
+	chosen {
 		bootargs = "rcupdate.rcu_expedited=1 rcu_nocbs=0-7";
 	};
 
 	soc: soc { };
-
-	mot_batterydata: qcom,battery-data { };
-
-	utags: utags { };
-
-	hw: hw { };
 };
 
 &soc {
@@ -1257,7 +1264,7 @@
 
 	qcom_seecom: qseecom@82200000 {
 		compatible = "qcom,qseecom";
-		reg = <0x82200000 0x3e00000>;
+		reg = <0x82200000 0x2200000>;
 		reg-names = "secapp-region";
 		memory-region = <&qseecom_mem>;
 		qcom,hlos-num-ce-hw-instances = <1>;
@@ -1273,7 +1280,7 @@
 
 	qcom_smcinvoke: smcinvoke@82200000 {
 		compatible = "qcom,smcinvoke";
-		reg = <0x82200000 0x3e00000>;
+		reg = <0x82200000 0x2200000>;
 		reg-names = "secapp-region";
 	};
 
@@ -2975,7 +2982,7 @@
 			iommus = <&apps_smmu 0x1801 0x0440>,
 				 <&apps_smmu 0x1821 0x0400>;
 			qcom,iommu-dma-addr-pool = <0x80000000 0x78000000>;
-			qcom,iommu-faults = "stall-disable";
+			qcom,iommu-faults = "stall-disable", "HUPCF";
 			dma-coherent;
 		};
 
@@ -2985,7 +2992,7 @@
 			iommus = <&apps_smmu 0x1802 0x0440>,
 				 <&apps_smmu 0x1822 0x0400>;
 			qcom,iommu-dma-addr-pool = <0x80000000 0x78000000>;
-			qcom,iommu-faults = "stall-disable";
+			qcom,iommu-faults = "stall-disable", "HUPCF";
 			dma-coherent;
 		};
 
@@ -2995,7 +3002,7 @@
 			iommus = <&apps_smmu 0x1803 0x0440>,
 				 <&apps_smmu 0x1823 0x0400>;
 			qcom,iommu-dma-addr-pool = <0x80000000 0x78000000>;
-			qcom,iommu-faults = "stall-disable";
+			qcom,iommu-faults = "stall-disable", "HUPCF";
 			dma-coherent;
 		};
 
@@ -3005,7 +3012,7 @@
 			iommus = <&apps_smmu 0x1804 0x0440>,
 				 <&apps_smmu 0x1824 0x0400>;
 			qcom,iommu-dma-addr-pool = <0x80000000 0x78000000>;
-			qcom,iommu-faults = "stall-disable";
+			qcom,iommu-faults = "stall-disable", "HUPCF";
 			dma-coherent;
 		};
 
@@ -3015,7 +3022,7 @@
 			iommus = <&apps_smmu 0x1805 0x0440>,
 				 <&apps_smmu 0x1825 0x0400>;
 			qcom,iommu-dma-addr-pool = <0x80000000 0x78000000>;
-			qcom,iommu-faults = "stall-disable";
+			qcom,iommu-faults = "stall-disable", "HUPCF";
 			dma-coherent;
 		};
 
@@ -3024,7 +3031,7 @@
 			label = "cdsprpc-smd";
 			iommus = <&apps_smmu 0x1806 0x0460>;
 			qcom,iommu-dma-addr-pool = <0x80000000 0x78000000>;
-			qcom,iommu-faults = "stall-disable";
+			qcom,iommu-faults = "stall-disable", "HUPCF";
 			dma-coherent;
 		};
 
@@ -3034,7 +3041,7 @@
 			iommus = <&apps_smmu 0x1807 0x0440>,
 				 <&apps_smmu 0x1827 0x0400>;
 			qcom,iommu-dma-addr-pool = <0x80000000 0x78000000>;
-			qcom,iommu-faults = "stall-disable";
+			qcom,iommu-faults = "stall-disable", "HUPCF";
 			dma-coherent;
 		};
 
@@ -3044,7 +3051,7 @@
 			iommus = <&apps_smmu 0x1808 0x0440>,
 				 <&apps_smmu 0x1828 0x0400>;
 			qcom,iommu-dma-addr-pool = <0x80000000 0x78000000>;
-			qcom,iommu-faults = "stall-disable";
+			qcom,iommu-faults = "stall-disable", "HUPCF";
 			dma-coherent;
 		};
 
@@ -3054,7 +3061,7 @@
 			qcom,secure-context-bank;
 			iommus = <&apps_smmu 0x1809 0x0460>;
 			qcom,iommu-dma-addr-pool = <0x60000000 0x78000000>;
-			qcom,iommu-faults = "stall-disable";
+			qcom,iommu-faults = "stall-disable", "HUPCF";
 			qcom,iommu-vmid = <0xA>;	/* VMID_CP_PIXEL */
 			dma-coherent;
 		};
@@ -3064,7 +3071,7 @@
 			label = "adsprpc-smd";
 			iommus = <&apps_smmu 0x1403 0x0>;
 			qcom,iommu-dma-addr-pool = <0x80000000 0x78000000>;
-			qcom,iommu-faults = "stall-disable";
+			qcom,iommu-faults = "stall-disable", "HUPCF";
 			dma-coherent;
 		};
 
@@ -3073,7 +3080,7 @@
 			label = "adsprpc-smd";
 			iommus = <&apps_smmu 0x1404 0x0>;
 			qcom,iommu-dma-addr-pool = <0x80000000 0x78000000>;
-			qcom,iommu-faults = "stall-disable";
+			qcom,iommu-faults = "stall-disable", "HUPCF";
 			dma-coherent;
 		};
 
@@ -3083,7 +3090,7 @@
 			iommus = <&apps_smmu 0x1405 0x0>;
 			shared-cb  = <5>;
 			qcom,iommu-dma-addr-pool = <0x80000000 0x78000000>;
-			qcom,iommu-faults = "stall-disable";
+			qcom,iommu-faults = "stall-disable", "HUPCF";
 			dma-coherent;
 		};
 	};
@@ -3700,7 +3707,7 @@
 		qcom,wlan-msa-fixed-region = <&pil_wlan_fw_mem>;
 		qcom,iommu-dma-addr-pool = <0xa0000000 0x10000000>;
 		qcom,iommu-dma = "fastmap";
-		qcom,iommu-faults = "stall-disable", "non-fatal";
+		qcom,iommu-faults = "stall-disable", "HUPCF", "non-fatal";
 		vdd-cx-mx-supply = <&L1A>;
 		vdd-1.8-xo-supply = <&L14A>;
 		vdd-1.3-rfa-supply = <&L2C>;
@@ -3908,9 +3915,6 @@
 	#include "pm8008.dtsi"
 };
 
-&qupv3_se7_i2c {
-    status = "disabled";
-};
 &qupv3_se2_2uart {
 	status = "ok";
 };

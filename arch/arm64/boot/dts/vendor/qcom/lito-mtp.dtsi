@@ -1,6 +1,7 @@
 #include <dt-bindings/gpio/gpio.h>
 #include "lito-audio-overlay.dtsi"
 #include "lito-pmic-overlay.dtsi"
+#include "camera/lito-camera-sensor-mtp.dtsi"
 #include "lito-sde-display.dtsi"
 #include "lito-thermal-overlay.dtsi"
 
@@ -21,17 +22,6 @@
 			debounce-interval = <15>;
 			linux,can-disable;
 		};
-
-               vol_down {
-                        label = "volume_down";
-                        gpios = <&pm7250b_gpios  3 GPIO_ACTIVE_LOW>;
-                        linux,input-type = <1>;
-                        linux,code = <KEY_VOLUMEDOWN>;
-                        gpio-key,wakeup;
-                        debounce-interval = <15>;
-                        linux,can-disable;
-                };
-
 	};
 
 	vdda_usb_ss_dp_core: vdda_usb_ss_dp_core {
@@ -50,106 +40,6 @@
 		#include "qg-batterydata-alium-3600mah.dtsi"
 		#include "qg-batterydata-atl466271_3300mAh.dtsi"
 	};
-	
-	tri_state_key:tri_state_key {
-		compatible = "oneplus,tri-state-key";
-		status = "ok";
-		interrupt-parent = <&tlmm>;
-		tristate,gpio_key1 = <&pm7250b_gpios 10 0x00>;
-		tristate,gpio_key2 = <&tlmm 83 0x00>;
-		tristate,gpio_key3 = <&tlmm 69 0x00>;
-		pinctrl-names =
-					"pmx_tri_state_key_active",
-					"pmx_tri_state_key_suspend";
-		pinctrl-0 = <&tri_state_key_active &tri_state_key_pmic>;
-		pinctrl-1 = <&tri_state_key_suspend &tri_state_key_pmic>;
-	};
-};
-
-
-&tlmm{
-	tri_state_key_active: tri_state_key_active {
-		mux {
-			pins = "gpio69", "gpio83";
-			function = "gpio";
-		};
-		config {
-			pins = "gpio69", "gpio83";
-			drive-strength = <2>;
-			bias-disable;
-		};
-	};
-
-	tri_state_key_suspend: tri_state_key_suspend {
-		mux {
-			pins = "gpio69", "gpio83";
-			function = "gpio";
-		};
-		config {
-			pins = "gpio69", "gpio83";
-			drive-strength = <2>;
-			bias-disable;
-		};
-	};
-};
-
-&pm7250b_gpios {
-	tri_state_key_pmic {
-		tri_state_key_pmic: tri_state_key_pmic {
-			pins = "gpio10";
-			function = "normal";
-			input-enable;
-			output-disable;
-			power-source = <0>;
-		};
-	};
-};
-
-
-/*for aw haptic start*/
-
-&tlmm {
-       aw_irq: aw_irq {
-       mux {
-            pins = "gpio70";
-            function = "gpio";
-       };
-       config {
-               pins = "gpio70";
-               drive-strength = <2>;
-               bias-pull-up;
-       };
-    };
-    aw_reset: aw_reset {
-       mux {
-	            pins = "gpio71";
-	            function = "gpio";
-	       };
-	      config {
-	              pins = "gpio71";
-	              drive-strength = <2>;
-	              bias-disable;
-	      };
-      };
-};
-&qupv3_se0_i2c {
-		status = "ok";
-		aw8697_haptic@5A {
-		compatible = "awinic,aw8697_haptic";
-		reg = <0x5A>;
-		reset-gpio = <&tlmm 71 0x00>;
-		irq-gpio = <&tlmm 70 0x00>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&aw_irq &aw_reset>;
-		status = "okay";
-	};
-};
-&qupv3_se2_2uart {
-    compatible = "qcom,msm-geni-console-oem";
-};
-&usb2_phy0 {
-	qcom,param-override-seq = <0xa1 0x6c
-				0x43 0x70>;
 };
 
 &usb_qmp_dp_phy {
@@ -222,7 +112,7 @@
 
 	cd-gpios = <&tlmm 69 GPIO_ACTIVE_LOW>;
 
-	status = "disabled";
+	status = "ok";
 };
 
 &pm8150a_amoled {
@@ -364,94 +254,6 @@
 	};
 };
 
-&qupv3_se7_i2c {
-        status = "ok";
-        Goodix-gt9886@5D {
-                compatible = "Goodix-gt9886";
-                reg = <0x5D>;
-                project-name = "20801";
-                chip-name = "GT885";
-                module_id = <7>;
-                /* Interrupt && Irq-gpio */
-                interrupt-parent = <&tlmm>;
-                interrupts = <9 0x2002>;
-
-                /* Power Config */
-                vdd_2v8-supply = <&pm8150_l13>;
-                //vcc_1v8-supply = <&pm8150a_l1>;
-                vdd_2v8_volt = <3008000>;
-                enable1v8_gpio = <&pm8150l_gpios 1 GPIO_ACTIVE_LOW>;
-
-                /* Other HW Resource */
-                irq-gpio = <&tlmm 9 0x2002>;
-                reset-gpio = <&tlmm 8 0x1>;
-                pinctrl-names = "pin_set_high", "pin_set_low";
-                pinctrl-0 = <&ts_int_active &ts_reset_active>;
-                pinctrl-1 = <&ts_reset_suspend>;
-
-                touchpanel,max-num-support = <10>;
-                touchpanel,tx-rx-num = <15 34>;
-                touchpanel,panel-coords = <1080 2400>;
-                touchpanel,display-coords = <1080 2400>;
-
-                /* SW Support Feature Control */
-                black_gesture_support = <1>;
-                //fw_edge_limit_support;
-                //charger_pump_support;
-                //spurious_fingerprint_support;
-                //fw_update_app_support;
-                //smart_gesture_support;
-                game_switch_support = <1>;
-                face_detect_support = <1>;
-                lcd_refresh_rate_switch = <1>;
-                touch_hold_support = <1>;
-                charge_detect_support = <1>;
-                register-is-16bit = <1>;
-                module_id_support = <1>;
-                //kernel_grip_support;
-                //health_monitor_support;
-                //fingerprint_underscreen_support;
-                //headset_pump_support;
-                //pressure_report_support;
-		panel =<&dsi_samsung_ams644vk04_dsc_cmd>;
-	};
-};
-&tlmm {
-	ts_int_active: ts_int_active {
-		mux {
-			pins = "gpio9";
-			function = "gpio";
-		};
-		config {
-			pins = "gpio9";
-			drive-strength = <8>;
-			bias-disable;
-		};
-	};
-	ts_reset_active: ts_reset_active {
-		mux {
-			pins = "gpio8";
-			function = "gpio";
-		};
-		config {
-			pins = "gpio8";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-	};
-	ts_reset_suspend: ts_reset_suspend {
-		mux {
-			pins = "gpio8";
-			function = "gpio";
-		};
-		config {
-			pins = "gpio8";
-			drive-strength = <8>;
-			bias-pull-down;
-		};
-	};
-};
-
 &dsi_sw43404_amoled_video {
 	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
 	qcom,mdss-dsi-bl-pmic-control-type = "bl_ctrl_dcs";
@@ -486,44 +288,27 @@
 	qcom,dsi-default-panel = <&dsi_sw43404_amoled_video>;
 };
 
-/* Add for NXP NFCC */
 &qupv3_se0_i2c {
-        status = "ok";
-        qcom,clk-freq-out = <1000000>;
-    nq@28 {
-        status = "disabled";
-    };
-
-    pn5xx@28 {
-        compatible = "nxp,pn544";
-        reg = <0x28>;
-        nxp,pn544-irq = <&tlmm 34 0x00>;
-        nxp,pn544-ven = <&tlmm 12 0x00>;
-        nxp,pn544-fw-dwnld = <&tlmm 35 0x00>;
-        nxp,pn544-clk-gpio = <&tlmm 31 0x00>;
-        nxp,pn544-ese-pwr = <&tlmm 26 0x00>;
-        //nfc_voltage_s4-supply = <&pm8150_s4>;
-        interrupt-parent = <&tlmm>;
-        //qcom,clk-src = "BBCLK3";
-        interrupts = <34 0>;
-        interrupt-names = "nfc_irq";
-        pinctrl-names = "nfc_active", "nfc_suspend";
-        pinctrl-0 = <&nfc_int_active &nfc_enable_active>;
-        pinctrl-1 = <&nfc_int_suspend &nfc_enable_suspend>;
-    };
-};
-
-/* Add for NXP eSE */
-&qupv3_se1_spi {
-    status = "ok";
-        qcom,disable-autosuspend;
-
-    ese@0 {
-        compatible = "nxp,p61";
-        reg = <0>;
-        spi-max-frequency = <8000000>;
-        nxp,nfcc = "5-0028";
-    };
+	status = "ok";
+	qcom,clk-freq-out = <1000000>;
+	#address-cells = <1>;
+	#size-cells = <0>;
+	nq@28 {
+		compatible = "qcom,nq-nci";
+		reg = <0x28>;
+		qcom,nq-irq = <&tlmm 34 0x00>;
+		qcom,nq-ven = <&tlmm 12 0x00>;
+		qcom,nq-firm = <&tlmm 35 0x00>;
+		qcom,nq-clkreq = <&tlmm 31 0x00>;
+		interrupt-parent = <&tlmm>;
+		interrupts = <34 0>;
+		interrupt-names = "nfc_irq";
+		pinctrl-names = "nfc_active", "nfc_suspend";
+		pinctrl-0 = <&nfc_int_active &nfc_enable_active
+				&nfc_clk_req_active>;
+		pinctrl-1 = <&nfc_int_suspend &nfc_enable_suspend
+				&nfc_clk_req_suspend>;
+	};
 };
 
 &dsi_sim_cmd {
@@ -550,15 +335,3 @@
 	qcom,platform-reset-gpio = <&pm8150l_gpios 3 0>;
 };
 
-
-&L6P {
-	regulator-max-microvolt = <2800000>;
-	/* Reduced the headroom by 16mV for AHC */
-	qcom,min-dropout-voltage = <184000>;
-};
-
-&L7P {
-	regulator-max-microvolt = <2900000>;
-	/* Reduced the headroom by 16mV for AHC */
-	qcom,min-dropout-voltage = <200000>;
-};

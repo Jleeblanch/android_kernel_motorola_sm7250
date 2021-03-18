@@ -1,0 +1,5 @@
+# Ignore camera directory
+# Kept for reference
+#qcom/camera
+#qcom/display
+#bindings/display/qcom
