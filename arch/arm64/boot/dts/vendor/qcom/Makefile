@@ -87,7 +87,7 @@ endif
 
 ifeq ($(CONFIG_MMI_DEVICE_DTBS),y)
 ifeq ($(CONFIG_KIEV_DTB),y)
-dtb-$(CONFIG_ARCH_LAGOON) += lagoon.dtb
+dtb-$(CONFIG_ARCH_LAGOON) += lagoon-moto-base.dtb
 endif
 else
 ifeq ($(CONFIG_BUILD_ARM64_DT_OVERLAY),y)
