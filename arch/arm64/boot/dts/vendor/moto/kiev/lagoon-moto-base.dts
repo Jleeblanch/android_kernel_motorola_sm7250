@@ -12,7 +12,7 @@
 
 /dts-v1/;
 
-#include "lagoon.dtsi"
+#include "../../qcom/lagoon.dtsi"
 
 / {
 	qcom,board-id = <0 0>;
